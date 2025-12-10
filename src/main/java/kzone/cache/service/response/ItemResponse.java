@@ -1,0 +1,11 @@
+package kzone.cache.service.response;
+
+import kzone.cache.model.Item;
+
+public record ItemResponse(
+        Long ItemId, String data
+) {
+    public static ItemResponse from(Item item) {
+        return new ItemResponse(item.getItemId(), item.getData());
+    }
+}
