@@ -16,7 +16,7 @@ import java.util.List;
 public class ItemController {
     private final List<ItemCacheService> itemCacheServices;
 
-    @GetMapping("/cache-strategy/{cacheStrategy}/items/{itemId})")
+    @GetMapping("/cache-strategy/{cacheStrategy}/items/{itemId}")
     public ItemResponse read(
             @PathVariable CacheStrategy cacheStrategy,
             @PathVariable Long itemId
