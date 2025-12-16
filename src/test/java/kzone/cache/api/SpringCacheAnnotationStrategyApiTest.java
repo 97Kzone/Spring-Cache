@@ -66,4 +66,16 @@ public class SpringCacheAnnotationStrategyApiTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    void readNullData() {
+        for (int i = 0; i < 3; i++) {
+            try {
+                ItemApiTestUtil.read(CACHE_STRATEGY, 99999L);
+            } catch (Exception ignored) {
+
+            }
+        }
+
+    }
 }
