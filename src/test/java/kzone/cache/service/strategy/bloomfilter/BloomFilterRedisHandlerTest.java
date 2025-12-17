@@ -102,4 +102,29 @@ class BloomFilterRedisHandlerTest extends RedisTestContainerSupport {
         long timeMillis = Duration.ofNanos(System.nanoTime() - start).toMillis();
         System.out.println("timeMillis = " + timeMillis);
     }
+
+    @Test
+    void mightContain_whenBloomFilterAddedTooManyData() {
+        BloomFilter bloomFilter = BloomFilter.create("testId", 1000, 0.01);
+
+        List<String> values = IntStream.range(0, 2000).mapToObj(idx -> "value" + idx).toList();
+        for (String value : values) {
+            bloomFilterRedisHandler.add(bloomFilter, value);
+        }
+
+        // when, then
+        for (String value : values) {
+            boolean result = bloomFilterRedisHandler.mightContain(bloomFilter, value);
+            assertThat(result).isTrue();
+        }
+
+        for (int i = 0; i < 10000; i++) {
+            String value = "notAddedValue" + i;
+            boolean result = bloomFilterRedisHandler.mightContain(bloomFilter, value);
+            if (result) {
+                // false positive
+                System.out.println("value = " + value);
+            }
+        }
+    }
 }
