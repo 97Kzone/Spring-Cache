@@ -4,6 +4,8 @@ import kzone.cache.service.strategy.splitshardedbloomfilter.SplitShardedBloomFil
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,5 +56,52 @@ class SplitShardedSubBloomFilterTest {
         assertThat(subFilter2.getShardCount())
                 .isEqualTo(splitShardedSubBloomFilter.getSplitShardedBloomFilter().getShardCount());
     }
-            
+
+    @Test
+    void findActivatedFilter_shouldReturnOriginFilter_whenSubFilterNotExists() {
+        // given
+        SplitShardedSubBloomFilter splitShardedSubBloomFilter = SplitShardedSubBloomFilter.create("testId", 1000, 0.01, 4);
+
+        // when
+        SplitShardedBloomFilter activatedFilter = splitShardedSubBloomFilter.findActivatedFilter(0);
+
+        // then
+        assertThat(activatedFilter.getId()).isEqualTo(splitShardedSubBloomFilter.getSplitShardedBloomFilter().getId());
+
+    }
+
+    @Test
+    void findActivatedFilter_shouldReturnSubFilter_whenSubFilterExists() {
+        // given
+        SplitShardedSubBloomFilter splitShardedSubBloomFilter = SplitShardedSubBloomFilter.create("testId", 1000, 0.01, 4);
+
+        int subFilterCount = 3;
+
+        // when
+        SplitShardedBloomFilter activatedFilter = splitShardedSubBloomFilter.findActivatedFilter(subFilterCount);
+
+        // then
+        assertThat(activatedFilter.getId()).isEqualTo(splitShardedSubBloomFilter.getId() + ":sub:2");
+    }
+
+    @Test
+    void findAll() {
+        // given
+        SplitShardedSubBloomFilter splitShardedSubBloomFilter = SplitShardedSubBloomFilter.create("testId", 1000, 0.01, 4);
+
+        int subFilterCount = 3;
+
+        // when
+        List<SplitShardedBloomFilter> splitShardedBloomFilters = splitShardedSubBloomFilter.findAll(subFilterCount);
+
+        // then
+        assertThat(splitShardedBloomFilters.size()).isEqualTo(subFilterCount + 1);
+        assertThat(splitShardedBloomFilters.getFirst().getId())
+                .isEqualTo(splitShardedSubBloomFilter.getSplitShardedBloomFilter().getId());
+
+        for (int subFilterIndex = 0; subFilterIndex < subFilterCount; subFilterIndex++) {
+            SplitShardedBloomFilter subFilter = splitShardedBloomFilters.get(subFilterIndex + 1);
+            assertThat(subFilter.getId()).isEqualTo(splitShardedSubBloomFilter.findSubFilter(subFilterIndex).getId());
+        }
+    }
 }
