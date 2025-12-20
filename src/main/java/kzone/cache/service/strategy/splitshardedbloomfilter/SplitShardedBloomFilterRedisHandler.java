@@ -2,6 +2,7 @@ package kzone.cache.service.strategy.splitshardedbloomfilter;
 
 import kzone.cache.service.strategy.splitbloomfilter.SplitBloomFilter;
 import kzone.cache.service.strategy.splitbloomfilter.SplitBloomFilterRedisHandler;
+import kzone.cache.service.strategy.splitshardedsubbloomfilter.SplitShardedSubBloomFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
